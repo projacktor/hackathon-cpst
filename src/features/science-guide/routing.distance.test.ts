@@ -1,10 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { sciencePointsById } from './data'
-import {
-  getOsrmDistanceTableFromSource,
-  getOsrmRoute,
-} from './osrm'
+import { getOsrmDistanceTableFromSource, getOsrmRoute } from './osrm'
 import { buildMaxPointsDistanceRoute } from './routing'
 import type { OsrmWaypoint } from './osrm'
 
@@ -17,7 +14,9 @@ type DistanceMatrix = Record<number, Record<number, number>>
 
 type RouteDistanceMap = Record<string, number>
 
-const mockedGetOsrmDistanceTableFromSource = vi.mocked(getOsrmDistanceTableFromSource)
+const mockedGetOsrmDistanceTableFromSource = vi.mocked(
+  getOsrmDistanceTableFromSource,
+)
 const mockedGetOsrmRoute = vi.mocked(getOsrmRoute)
 
 function toPointId(waypoint: OsrmWaypoint): number {
@@ -30,16 +29,21 @@ function toPointId(waypoint: OsrmWaypoint): number {
   throw new Error(`Unknown waypoint ${waypoint.lat},${waypoint.lon}`)
 }
 
-function setupOsrmMocks(matrix: DistanceMatrix, routeDistances: RouteDistanceMap) {
-  mockedGetOsrmDistanceTableFromSource.mockImplementation(async (source, destinations) => {
-    const sourceId = toPointId(source)
-    const row = matrix[sourceId] ?? {}
+function setupOsrmMocks(
+  matrix: DistanceMatrix,
+  routeDistances: RouteDistanceMap,
+) {
+  mockedGetOsrmDistanceTableFromSource.mockImplementation(
+    async (source, destinations) => {
+      const sourceId = toPointId(source)
+      const row = matrix[sourceId] ?? {}
 
-    return destinations.map((destination) => {
-      const destinationId = toPointId(destination)
-      return row[destinationId] ?? Number.POSITIVE_INFINITY
-    })
-  })
+      return destinations.map((destination) => {
+        const destinationId = toPointId(destination)
+        return row[destinationId] ?? Number.POSITIVE_INFINITY
+      })
+    },
+  )
 
   mockedGetOsrmRoute.mockImplementation(async (waypoints) => {
     const pointIds = waypoints.map(toPointId)

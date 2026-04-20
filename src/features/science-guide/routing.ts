@@ -1,8 +1,5 @@
 import { lectures, sciencePointsById } from './data'
-import {
-  getOsrmDistanceTableFromSource,
-  getOsrmRoute,
-} from './osrm'
+import { getOsrmDistanceTableFromSource, getOsrmRoute } from './osrm'
 import type { OsrmWaypoint } from './osrm'
 import type { BuiltRoute, Lecture, SciencePoint } from './types'
 
@@ -127,7 +124,10 @@ function isBetterDistanceCandidate(
     return candidateDistance < bestDistance
   }
 
-  return candidate.route.waypointIds.join(',') < currentBest.route.waypointIds.join(',')
+  return (
+    candidate.route.waypointIds.join(',') <
+    currentBest.route.waypointIds.join(',')
+  )
 }
 
 export async function buildMaxPointsDistanceRoute(
@@ -166,7 +166,9 @@ export async function buildMaxPointsDistanceRoute(
     throw new Error('Failed to resolve start point')
   }
 
-  let remaining = resolvedCandidates.filter((point) => point.id !== startPoint.id)
+  let remaining = resolvedCandidates.filter(
+    (point) => point.id !== startPoint.id,
+  )
   if (remaining.length === 0) {
     throw new Error('Need at least one destination in addition to start point')
   }
@@ -200,8 +202,9 @@ export async function buildMaxPointsDistanceRoute(
       }
 
       if (
-        candidateDistance < bestDistance
-        || (candidateDistance === bestDistance && destinations[i].id < destinations[bestIndex]?.id)
+        candidateDistance < bestDistance ||
+        (candidateDistance === bestDistance &&
+          destinations[i].id < destinations[bestIndex]?.id)
       ) {
         bestDistance = candidateDistance
         bestIndex = i
@@ -221,7 +224,9 @@ export async function buildMaxPointsDistanceRoute(
     selectedPointIds.push(nextPoint.id)
     currentPoint = nextPoint
     currentDistance = tentativeDistance
-    const originalIndex = remaining.findIndex((point) => point.id === nextPoint.id)
+    const originalIndex = remaining.findIndex(
+      (point) => point.id === nextPoint.id,
+    )
     if (originalIndex < 0) {
       throw new Error('Failed to progress distance-based route selection')
     }
@@ -238,19 +243,34 @@ export async function buildMaxPointsDistanceRoute(
           coordinates: route.coordinates,
           metrics: {
             ...route.metrics,
-            durationSeconds: route.metrics.durationSeconds + stopDurationSeconds,
+            durationSeconds:
+              route.metrics.durationSeconds + stopDurationSeconds,
           },
           waypointIds: [...selectedPointIds],
           distanceSelectionMode:
-            route.metrics.distanceMeters <= targetDistanceMeters ? 'exact' : 'nearest',
+            route.metrics.distanceMeters <= targetDistanceMeters
+              ? 'exact'
+              : 'nearest',
         }
 
         const candidate = { route: builtRoute }
         if (builtRoute.distanceSelectionMode === 'exact') {
-          if (isBetterDistanceCandidate(candidate, exactBest, targetDistanceMeters)) {
+          if (
+            isBetterDistanceCandidate(
+              candidate,
+              exactBest,
+              targetDistanceMeters,
+            )
+          ) {
             exactBest = candidate
           }
-        } else if (isBetterDistanceCandidate(candidate, nearestBest, targetDistanceMeters)) {
+        } else if (
+          isBetterDistanceCandidate(
+            candidate,
+            nearestBest,
+            targetDistanceMeters,
+          )
+        ) {
           nearestBest = candidate
         }
       }

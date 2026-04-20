@@ -55,8 +55,9 @@ export interface WeatherOverview {
   sourcePointName: string
 }
 
-const OPENWEATHER_API_KEY =
-  String(import.meta.env.VITE_OPENWEATHER_API_KEY ?? '').trim()
+const OPENWEATHER_API_KEY = String(
+  import.meta.env.VITE_OPENWEATHER_API_KEY ?? '',
+).trim()
 
 function normalizeDescription(description: string): string {
   if (!description) {
@@ -71,19 +72,26 @@ function hasRecentPrecipitation(current: OpenWeatherCurrentResponse): boolean {
   const snow1h = current.snow?.['1h'] ?? current.snow?.['3h'] ?? 0
   const weatherMain = current.weather?.[0]?.main ?? ''
 
-  return rain1h > 0 || snow1h > 0 || /rain|drizzle|thunderstorm|snow/i.test(weatherMain)
+  return (
+    rain1h > 0 ||
+    snow1h > 0 ||
+    /rain|drizzle|thunderstorm|snow/i.test(weatherMain)
+  )
 }
 
 function hasFutureRain(forecastItems: OpenWeatherForecastItem[]): boolean {
   return forecastItems.some((item) => {
-    const precipitationAmount = (item.rain?.['3h'] ?? 0) + (item.snow?.['3h'] ?? 0)
+    const precipitationAmount =
+      (item.rain?.['3h'] ?? 0) + (item.snow?.['3h'] ?? 0)
     const precipitationProbability = item.pop ?? 0
 
     return precipitationAmount > 0 || precipitationProbability >= 0.45
   })
 }
 
-function hasFutureStrongWind(forecastItems: OpenWeatherForecastItem[]): boolean {
+function hasFutureStrongWind(
+  forecastItems: OpenWeatherForecastItem[],
+): boolean {
   return forecastItems.some((item) => (item.wind?.speed ?? 0) >= 8)
 }
 
@@ -95,7 +103,9 @@ async function fetchJson<T>(url: URL, signal?: AbortSignal): Promise<T> {
   const response = await fetch(url, { signal })
   if (!response.ok) {
     if (response.status === 401) {
-      throw new Error('OpenWeather API key отклонен (401). Проверьте ключ и тариф.')
+      throw new Error(
+        'OpenWeather API key отклонен (401). Проверьте ключ и тариф.',
+      )
     }
 
     throw new Error(`Не удалось получить погоду: HTTP ${response.status}`)
@@ -130,7 +140,9 @@ export async function fetchWeatherOverview(
   signal?: AbortSignal,
 ): Promise<WeatherOverview> {
   if (!OPENWEATHER_API_KEY) {
-    throw new Error('Не найден VITE_OPENWEATHER_API_KEY в .env (перезапустите dev-сервер после изменения .env)')
+    throw new Error(
+      'Не найден VITE_OPENWEATHER_API_KEY в .env (перезапустите dev-сервер после изменения .env)',
+    )
   }
 
   const weatherUrl = new URL('https://api.openweathermap.org/data/2.5/weather')
@@ -140,7 +152,9 @@ export async function fetchWeatherOverview(
   weatherUrl.searchParams.set('lang', 'ru')
   weatherUrl.searchParams.set('appid', OPENWEATHER_API_KEY)
 
-  const forecastUrl = new URL('https://api.openweathermap.org/data/2.5/forecast')
+  const forecastUrl = new URL(
+    'https://api.openweathermap.org/data/2.5/forecast',
+  )
   forecastUrl.searchParams.set('lat', String(lat))
   forecastUrl.searchParams.set('lon', String(lon))
   forecastUrl.searchParams.set('units', 'metric')

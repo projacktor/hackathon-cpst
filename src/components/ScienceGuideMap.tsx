@@ -60,7 +60,10 @@ export function ScienceGuideMap({
     [],
   )
 
-  const routeWaypointSet = useMemo(() => new Set(routeWaypointIds), [routeWaypointIds])
+  const routeWaypointSet = useMemo(
+    () => new Set(routeWaypointIds),
+    [routeWaypointIds],
+  )
 
   return (
     <MapContainer
@@ -99,12 +102,12 @@ export function ScienceGuideMap({
               click: () => onSelectPoint(point.id),
             }}
           >
-            <Tooltip>
-              {point.name}
-            </Tooltip>
+            <Tooltip>{point.name}</Tooltip>
             <Popup>
               <div className="space-y-2">
-                <p className="m-0 text-sm font-semibold text-black">{point.name}</p>
+                <p className="m-0 text-sm font-semibold text-black">
+                  {point.name}
+                </p>
                 {canTogglePointInBasket ? (
                   <button
                     type="button"
@@ -114,7 +117,9 @@ export function ScienceGuideMap({
                     {inBasket ? 'Убрать из маршрута' : 'Добавить в маршрут'}
                   </button>
                 ) : (
-                  <p className="m-0 text-xs text-black">В этом сценарии корзина недоступна.</p>
+                  <p className="m-0 text-xs text-black">
+                    В этом сценарии корзина недоступна.
+                  </p>
                 )}
               </div>
             </Popup>

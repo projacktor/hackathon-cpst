@@ -13,13 +13,8 @@ const config = defineConfig({
     tailwindcss(),
     tanstackStart(),
     viteReact(),
-    nitro()
+    nitro(),
   ],
-//  server: {
-//    host: '0.0.0.0',
-//    port: 4173,
-//    allowedHosts: ['volgatrail-innopolis.vercel.app'],
-//  },
 })
 
 export default config

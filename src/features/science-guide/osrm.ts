@@ -128,7 +128,11 @@ export async function getOsrmDistanceTableFromSource(
   })
   const payload = await parseJson<OsrmTableResponse>(response)
 
-  if (payload.code !== 'Ok' || !payload.distances || payload.distances.length === 0) {
+  if (
+    payload.code !== 'Ok' ||
+    !payload.distances ||
+    payload.distances.length === 0
+  ) {
     throw new Error('OSRM returned no table data')
   }
 
